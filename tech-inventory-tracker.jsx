@@ -105,6 +105,24 @@ const TechInventoryTracker = () => {
     electronics: lang === 'en' ? 'Electronics' : 'Elektronik'
   };
 
+const [searchQuery, setSearchQuery] = useState('');
+
+// Filter items by search query
+const filteredItems = activeProject?.items.filter(item =>
+  item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  item.notes.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  item.source.toLowerCase().includes(searchQuery.toLowerCase())
+) || [];
+
+// Add search input in the items section
+<input
+  type="text"
+  placeholder="Search items..."
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)}
+  style={styles.searchInput}
+/>
+
   const statusLabels = {
     needed: lang === 'en' ? 'Needed' : 'Behövs',
     ordered: lang === 'en' ? 'Ordered' : 'Beställd',

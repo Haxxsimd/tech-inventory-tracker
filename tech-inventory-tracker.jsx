@@ -112,27 +112,27 @@ const TechInventoryTracker = () => {
     complete: lang === 'en' ? 'Complete' : 'Klar'
   };
 
-  // Load from storage
-  useEffect(() => {
-    loadProjects();
-  }, []);
+ // Save to storage
+useEffect(() => {
+  try {
+    localStorage.setItem('tech-inventory', JSON.stringify(projects));
+  } catch (err) {
+    console.error('Failed to save:', err);
+  }
+}, [projects]);
 
-  // Save to storage
-  useEffect(() => {
-    saveProjects();
-  }, [projects]);
-
-  const loadProjects = async () => {
-    try {
-      const result = await window.storage?.get('tech-inventory');
-      if (result?.value) {
-        setProjects(JSON.parse(result.value));
-      }
-    } catch (err) {
-      console.log('No saved projects yet');
+// Load from storage
+useEffect(() => {
+  try {
+    const saved = localStorage.getItem('tech-inventory');
+    if (saved) {
+      setProjects(JSON.parse(saved));
     }
-  };
-
+  } catch (err) {
+    console.log('No saved projects yet');
+  }
+}, []);
+  
   const saveProjects = async () => {
     try {
       await window.storage?.set('tech-inventory', JSON.stringify(projects));

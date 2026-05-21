@@ -123,6 +123,59 @@ const filteredItems = activeProject?.items.filter(item =>
   style={styles.searchInput}
 />
 
+const [editingItem, setEditingItem] = useState(null);
+const [editValues, setEditValues] = useState({});
+
+// Add edit button in item card
+<button onClick={() => setEditingItem(item)} style={styles.editBtn}>✏️</button>
+
+// Save edited values
+const saveEdit = () => {
+  const updated = projects.map(p => {
+    if (p.id === activeProject.id) {
+      return {
+        ...p,
+        items: p.items.map(i =>
+          i.id === editingItem.id ? { ...i, ...editValues } : i
+        )
+      };
+    }
+    return p;
+  });
+  setProjects(updated);
+  setActiveProject(updated.find(p => p.id === activeProject.id));
+  setEditingItem(null);
+};
+
+// Export to JSON file
+const exportData = () => {
+  const dataStr = JSON.stringify(projects, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `tech-inventory-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+// Import from JSON file
+const importData = (event) => {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (Array.isArray(imported)) {
+        setProjects(imported);
+      }
+    } catch {
+      alert('Invalid file format');
+    }
+  };
+  reader.readAsText(file);
+};
+
   const statusLabels = {
     needed: lang === 'en' ? 'Needed' : 'Behövs',
     ordered: lang === 'en' ? 'Ordered' : 'Beställd',
